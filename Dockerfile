@@ -9,14 +9,16 @@ RUN apt-get update && \
 
 ENV PATH="/opt/venv/bin:${PATH}"
 
-COPY app_java.java home.html ./
+COPY App.java ./
 COPY delivery/ ./delivery/
 COPY frontend/ ./frontend/
 COPY warehouse/ ./warehouse/
 COPY videos/ ./videos/
+COPY home/ ./home/
+COPY css/ ./css/
 
 ENV HOST=0.0.0.0
 
 EXPOSE 5000
 
-CMD ["java", "app_java.java"]
+CMD ["java", "App.java"]

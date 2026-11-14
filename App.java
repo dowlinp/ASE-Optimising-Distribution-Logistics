@@ -6,14 +6,19 @@ import java.nio.file.Path;
 
 public class App {
     public static void main(String[] args) throws Exception {
-        // 0.0.0.0 so it is reachable from outside a Docker container
         String host = System.getenv().getOrDefault("HOST", "127.0.0.1");
-        HttpServer server =
-                HttpServer.create(new InetSocketAddress(host, 5000), 0);
+        HttpServer server = HttpServer.create(new InetSocketAddress(host, 5000), 0);
 
-        // "/" serves Page.html
         server.createContext("/", exchange -> {
-            byte[] body = Files.readAllBytes(Path.of("home.html"));
+            byte[] body = Files.readAllBytes(Path.of("home/home.html"));
+            exchange.getResponseHeaders().set("Content-Type", "text/html; charset=utf-8");
+            exchange.sendResponseHeaders(200, body.length);
+            exchange.getResponseBody().write(body);
+            exchange.close();
+        });
+
+        server.createContext("/Account", exchange -> {
+            byte[] body = Files.readAllBytes(Path.of("home/account.html"));
             exchange.getResponseHeaders().set("Content-Type", "text/html; charset=utf-8");
             exchange.sendResponseHeaders(200, body.length);
             exchange.getResponseBody().write(body);
@@ -36,7 +41,6 @@ public class App {
             exchange.close();
         });
 
-        // "/delivery" serves delivery.html
         server.createContext("/Delivery", exchange -> {
             byte[] body = Files.readAllBytes(Path.of("delivery/delivery.html"));
             exchange.getResponseHeaders().set("Content-Type", "text/html; charset=utf-8");
@@ -45,76 +49,72 @@ public class App {
             exchange.close();
         });
 
-        server.createContext("/videos/", exchange -> {
-            Path videoPath = Path.of("videos/CityMap2.png");
+        server.createContext("/css/", exchange -> {
+            String filename = exchange.getRequestURI().getPath()
+                    .replace("/css/", "");
 
-            byte[] video = Files.readAllBytes(videoPath);
+            if (!filename.matches("[a-zA-Z0-9_-]+\\.css")) {
+                exchange.sendResponseHeaders(400, -1);
+                exchange.close();
+                return;
+            }
 
-            exchange.getResponseHeaders().set("Content-Type", "video/mp4");
-            exchange.sendResponseHeaders(200, video.length);
+            Path file = Path.of("css", filename);
+
+            if (!Files.isRegularFile(file)) {
+                exchange.sendResponseHeaders(404, -1);
+                exchange.close();
+                return;
+            }
+
+            byte[] body = Files.readAllBytes(file);
+
+            exchange.getResponseHeaders().set("Content-Type", "text/css; charset=utf-8");
+            exchange.sendResponseHeaders(200, body.length);
 
             try (var output = exchange.getResponseBody()) {
-                output.write(video);
+                output.write(body);
+            }
+        });
+        
+        server.createContext("/videos/", exchange -> {
+            String filename = exchange.getRequestURI().getPath().replace("/videos/", "");
+
+            if (!filename.matches("[a-zA-Z0-9_-]+\\.png")) {
+                exchange.sendResponseHeaders(400, -1);
+                exchange.close();
+                return;
+            }
+
+            Path imagePath = Path.of("videos", filename);
+
+            if (!Files.exists(imagePath)) {
+                exchange.sendResponseHeaders(404, -1);
+                exchange.close();
+                return;
+            }
+
+            byte[] image = Files.readAllBytes(imagePath);
+
+            exchange.getResponseHeaders().set("Content-Type", "image/png");
+            exchange.sendResponseHeaders(200, image.length);
+
+            try (var output = exchange.getResponseBody()) {
+                output.write(image);
             }
         });
 
-        // server.createContext("/api/delivery/", exchange -> {
-
-        //     String orderId = exchange.getRequestURI()
-        //                             .getPath()
-        //                             .replace("/api/delivery/", "");
-
-        //     // Run the Python route generator
-        //     ProcessBuilder pb = new ProcessBuilder(
-        //         "python3",
-        //         "routing/generate_kml.py",
-        //         orderId
-        //     );
-
-        //     pb.redirectErrorStream(true);
-
-        //     Process process = pb.start();
-        //     String output = new String(process.getInputStream().readAllBytes());
-
-        //     int exitCode = process.waitFor();
-
-        //     String response;
-
-        //     if (exitCode == 0) {
-        //         response = output;
-        //     } else {
-        //         exchange.sendResponseHeaders(500, 0);
-        //         exchange.getResponseBody().write(output.getBytes());
-        //         exchange.close();
-        //         return;
-        //     }
-
-        //     byte[] body = response.getBytes();
-
-        //     exchange.getResponseHeaders().set(
-        //         "Content-Type", "text/plain; charset=utf-8"
-        //     );
-
-        //     exchange.sendResponseHeaders(200, body.length);
-        //     exchange.getResponseBody().write(body);
-        //     exchange.close();
-        // });
-
-        
         server.createContext("/routes/", exchange -> {
 
             String filename = exchange.getRequestURI().getPath().replace("/routes/", "");
 
-            // Only allow GeoJSON files
             if (!filename.matches("[a-zA-Z0-9_-]+\\.geojson")) {
                 exchange.sendResponseHeaders(400, -1);
                 exchange.close();
                 return;
             }
 
-            Path routesFolder = Path.of("delivery/routes")
-                                    .toAbsolutePath()
-                                    .normalize();
+            Path routesFolder = Path.of("delivery/routes").toAbsolutePath().normalize();
 
             Path file = routesFolder.resolve(filename).normalize();
 
@@ -126,9 +126,7 @@ public class App {
 
             byte[] body = Files.readAllBytes(file);
 
-            exchange.getResponseHeaders().set(
-                "Content-Type", "application/geo+json"
-            );
+            exchange.getResponseHeaders().set("Content-Type", "application/geo+json");
 
             exchange.sendResponseHeaders(200, body.length);
 
