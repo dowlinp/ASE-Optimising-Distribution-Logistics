@@ -1,0 +1,15 @@
+{
+  "name": "distribution-driver-poc",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "npm run verify:test-freeze && playwright test --config delivery/playwright.config.mjs",
+    "verify:test-freeze": "node delivery/tests/verify-freeze.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.65.1"
+  },
+  "dependencies": {
+    "leaflet": "1.9.4"
+  }
+}

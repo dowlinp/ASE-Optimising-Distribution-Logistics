@@ -1,0 +1,14 @@
+{
+  ".dockerignore": "1cc0660fdb5eae95ef0e30c3f45df90a627a0fe5cdd98e261e0605875119187c",
+  ".gitignore": "d36e8680e2280aacdaa1e55d73fe0cc058da20b90c921207ccbeeed1c1c80cf6",
+  "delivery/playwright.config.mjs": "aa0252c19ac841dd584052bcfff3477e2b76dcf354513795f5ef0325cc88c41d",
+  "delivery/tests/README.md": "f0cd87c994ad308e5094e3e24e30e8675058c7b5c5f87fa1e47449924291c1fe",
+  "delivery/tests/driver.spec.mjs": "660da8b7aad0abeeaf145c0be6b319fb0afcefec58f895260c91d907bb7362ac",
+  "delivery/tests/fixtures.mjs": "04505e5a9184198aec2e066b1be920d02acb5a04ce857a357cbf1507aa107e16",
+  "delivery/tests/helpers.mjs": "b4485b631cfab0827a0054b929f8f4c1e5f1d781b353496c47db7c86d4bb6e04",
+  "delivery/tests/serve.mjs": "4e40f0daeea05d24b490f03ee6cb76aacd5ef1ace1d163ded64af6fb9a111e16",
+  "delivery/tests/upstream.mjs": "0d858553e92ef7e4bd92de8be8791b8e38eba98a583caedcc93ce7a568694448",
+  "delivery/tests/verify-freeze.mjs": "596be73605d403570e2c843417ddce0ddb93faecb70a86098097d348ecf3d87b",
+  "package-lock.json": "d92e294a1e133fcd4ecca36bafb36ea7034ef50df4f3e35b65c4f8a9fea16bd2",
+  "package.json": "b58d2b1509086493caf91fd9ab7121fbde0c0a3bcedb6fcdbdcbdaf32ec16a25"
+}
