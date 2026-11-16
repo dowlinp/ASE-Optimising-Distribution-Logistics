@@ -1,9 +1,11 @@
-<link rel="stylesheet" href="/css/menu.css">
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+
+  <link rel="stylesheet" href="/components/css/menu.css">
+  <script src="/components/js/menu.js" defer></script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Distribution Management</title>
@@ -115,25 +117,6 @@
       letter-spacing: 1px;
     }
 
-    .menu,
-    .close-menu {
-      background: white;
-      color: black;
-      border: 1px solid black;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .menu {
-      position: fixed;
-      top: 5%;
-      left: 5%;
-      width: 50px;
-      height: 50px;
-      font-size: 25px;
-      z-index: 1001;
-    }
-
     @media (max-width: 700px) {
       .home-panel {
         max-height: 85vh;
@@ -160,26 +143,24 @@
   <div id="accountStatus"></div>
 
   <script>
-      const loggedIn = sessionStorage.getItem("loggedIn");
-      const username = sessionStorage.getItem("username");
+    const loggedIn = sessionStorage.getItem("loggedIn");
+    const username = sessionStorage.getItem("username");
 
-      if (loggedIn === "true") {
-          document.getElementById("accountStatus").innerHTML =
-              "Welcome back, " + username + "!";
-      }
+    if (loggedIn === "true") {
+      document.getElementById("accountStatus").innerHTML =
+        "Welcome back, " + username + "!";
+    }
   </script>
-
-  </div>
 
   <button onclick="logout()">Logout</button>
 
   <script>
-  function logout() {
+    function logout() {
       sessionStorage.clear();
       window.location.href = "/";
-  }
+    }
   </script>
-  
+
   <main class="home-panel">
     <div class="panel-label">DISTRIBUTION MANAGEMENT</div>
 
@@ -217,7 +198,6 @@
         </div>
         <div class="card-access">OPEN →</div>
       </a>
-
     </div>
 
     <footer class="panel-footer">
@@ -225,25 +205,6 @@
       <span>2026</span>
     </footer>
   </main>
-
-  <button class="menu" onclick="toggleMenu()">☰</button>
-
-  <nav id="sidePanel" class="side-panel">
-    <button class="close-menu" onclick="toggleMenu()">&times;</button>
-
-    <h2>Menu</h2>
-    <a href="/">Home</a>
-    <a href="/User">Customers</a>
-    <a href="/Warehouse">Warehouse</a>
-    <a href="/Delivery">Deliveries</a>
-    <a href="/Account">Account</a>
-  </nav>
-
-  <script>
-    function toggleMenu() {
-      document.getElementById("sidePanel").classList.toggle("open");
-    }
-  </script>
 
 </body>
 

@@ -15,10 +15,13 @@ COPY frontend/ ./frontend/
 COPY warehouse/ ./warehouse/
 COPY videos/ ./videos/
 COPY home/ ./home/
-COPY css/ ./css/
+COPY components/css ./components/css/
+COPY components/js ./components/js/
+COPY components/html ./components/html/
+COPY components/lib ./components/lib/
 
 ENV HOST=0.0.0.0
 
 EXPOSE 5000
 
-CMD ["java", "App.java"]
+CMD ["java", "--class-path", ".:lib/*", "App.java"]
