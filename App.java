@@ -41,6 +41,21 @@ public class App {
             exchange.close();
         });
 
+        server.createContext("/warehouse-assets/", exchange -> {
+            String filename = exchange.getRequestURI().getPath().substring("/warehouse-assets/".length());
+            if (!filename.equals("demo-data.js") && !filename.equals("warehouse.js")) {
+                exchange.sendResponseHeaders(404, -1);
+                exchange.close();
+                return;
+            }
+            byte[] body = Files.readAllBytes(Path.of("warehouse", filename));
+            exchange.getResponseHeaders().set("Content-Type", "text/javascript; charset=utf-8");
+            exchange.sendResponseHeaders(200, body.length);
+            try (var output = exchange.getResponseBody()) {
+                output.write(body);
+            }
+        });
+
         server.createContext("/Delivery", exchange -> {
             byte[] body = Files.readAllBytes(Path.of("delivery/delivery.html"));
             exchange.getResponseHeaders().set("Content-Type", "text/html; charset=utf-8");
