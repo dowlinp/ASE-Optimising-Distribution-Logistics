@@ -1,9 +1,12 @@
-<link rel="stylesheet" href="/css/menu.css">
 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+    
+<link rel="stylesheet" href="/components/css/menu.css">
+<script src="/components/js/menu.js" defer></script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -95,25 +98,7 @@
       document.getElementById("output").textContent = text;
     }
   </script>
-  <button id="menu" class="menu" onclick="togglePanel()">
-    ☰
-  </button>
 
-  <div id="sidePanel" class="side-panel">
-
-    <button class="close-menu" onclick="togglePanel()">
-      &times;
-    </button>
-
-    <h2>Menu</h2>
-
-    <a href="/">Home</a>
-    <a href="/User">User</a>
-    <a href="/Warehouse">Warehouse</a>
-    <a href="/Delivery">Delivery</a>
-    <a href="/Account">Account</a>
-
-  </div>
 </body>
 
 </html>

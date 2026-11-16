@@ -15,7 +15,9 @@ COPY frontend/ ./frontend/
 COPY warehouse/ ./warehouse/
 COPY videos/ ./videos/
 COPY home/ ./home/
-COPY css/ ./css/
+COPY components/css ./components/
+COPY components/js ./components/
+COPY components/html ./components/
 
 ENV HOST=0.0.0.0
 

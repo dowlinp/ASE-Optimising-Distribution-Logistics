@@ -1,6 +1,7 @@
-
 .menu,
 .close-menu {
+    padding: 0;
+    margin: 0;
     background: white;
     color: black;
     border: 1px solid black;
@@ -28,6 +29,9 @@
     position: fixed;
     top: 0;
     left: 0;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
     width: 280px;
     height: 100%;
     padding: 20px;
@@ -44,6 +48,7 @@
 
 .side-panel h2 {
     margin-top: 20px;
+    text-align: center;
 }
 
 .side-panel a {
@@ -52,6 +57,7 @@
     color: black;
     text-decoration: none;
     border-bottom: 1px solid #ddd;
+    text-align: center;
 }
 
 .side-panel a:hover {
@@ -66,4 +72,10 @@
     width: 40px;
     height: 40px;
     font-size: 25px;
+}
+
+.side-panel .account-link {
+    margin-top: auto;
+    border-top: 1px solid #ddd;
+    border-bottom: none;
 }
