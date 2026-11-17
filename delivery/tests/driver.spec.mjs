@@ -13,6 +13,9 @@ test('driver completes a photo-required delivery and receives the return-to-hub 
   // Checks the displayed plan, required photo, successful confirmation and return to the hub.
   await startAssignedRound(page);
 
+  // Final totals are shown only after the last task has been acknowledged.
+  await expect(page.getByRole('region', { name: 'Round summary', exact: true })).not.toBeVisible();
+
   await expect(page.getByTestId('vehicle-id')).toHaveText('VAN-1');
   await expect(page.getByTestId('round-id')).toHaveText('ROUND-1');
   await expect(page.getByTestId('next-stop-eta')).toContainText('09:15');
@@ -58,6 +61,12 @@ test('driver completes a photo-required delivery and receives the return-to-hub 
   // This is the last delivery, so the acknowledged outcome leads back to the hub.
   await expect(page.getByTestId('navigation-mode')).toHaveText('Return to hub');
   await expect(page.getByTestId('remaining-stops')).toHaveText('0');
+
+  const summary = page.getByRole('region', { name: 'Round summary', exact: true });
+  await expect(summary).toBeVisible();
+  await expect(summary.getByTestId('succeeded-count')).toHaveText('1');
+  await expect(summary.getByTestId('failed-count')).toHaveText('0');
+  await expect(page.locator('#map svg path.leaflet-interactive')).toBeVisible();
 
   const serviceState = await readServiceState();
   expect(serviceState.outcomes).toEqual([
@@ -112,6 +121,13 @@ test('failed delivery advances without proof or reason and is sent to DCM', asyn
 
   await expect(page.getByTestId('navigation-mode')).toHaveText('Return to hub');
   await expect(page.getByTestId('remaining-stops')).toHaveText('0');
+
+  // A failed final task appears in the summary while the return route stays visible.
+  const summary = page.getByRole('region', { name: 'Round summary', exact: true });
+  await expect(summary).toBeVisible();
+  await expect(summary.getByTestId('succeeded-count')).toHaveText('0');
+  await expect(summary.getByTestId('failed-count')).toHaveText('1');
+  await expect(page.locator('#map svg path.leaflet-interactive')).toBeVisible();
 
   const serviceState = await readServiceState();
   expect(serviceState.failures).toEqual([

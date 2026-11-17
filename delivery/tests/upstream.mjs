@@ -62,7 +62,7 @@ export function startFakeServices(port = 5091) {
 
     // Driver lookup returns the one vehicle and round assigned in the fixture data.
     if (path.includes('/drivers/')) {
-      return sendJson(200, createRound(options, completedTaskCount));
+      return sendJson(200, createRound(options, completedTaskCount, outcomes));
     }
 
     if (path.endsWith('/outcomes')) {
@@ -130,7 +130,7 @@ export function startFakeServices(port = 5091) {
 
     if (path === '/rounds/ROUND-1') {
       // After an accepted outcome, this response tells the interface that no tasks remain.
-      return sendJson(200, createRound(options, completedTaskCount));
+      return sendJson(200, createRound(options, completedTaskCount, outcomes));
     }
 
     return sendJson(404, { error: 'Not found' });

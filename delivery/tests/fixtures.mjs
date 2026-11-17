@@ -29,7 +29,7 @@ export const outboundRouteCoordinates = [
 // Builds the assignment/current-round response returned by fake DCM.
 // Zero completed tasks keeps TASK-1 active. Recording success or failure removes it,
 // leaving no delivery tasks and allowing the interface to show the return to hub.
-export function createRound(options = {}, completedTaskCount = 0) {
+export function createRound(options = {}, completedTaskCount = 0, recordedOutcomes = []) {
   let activeTask = null;
 
   if (!completedTaskCount) {
@@ -48,6 +48,11 @@ export function createRound(options = {}, completedTaskCount = 0) {
     activeTask,
     // Count delivery tasks only; returning to the hub is not another delivery.
     remainingStops: activeTask ? 1 : 0,
+    // DCM supplies final totals; the interface must not calculate them from local clicks.
+    summary: activeTask ? null : {
+      succeeded: recordedOutcomes.filter(outcome => outcome.outcome === 'SUCCESS').length,
+      failed: recordedOutcomes.filter(outcome => outcome.outcome === 'FAILED').length,
+    },
   };
 }
 

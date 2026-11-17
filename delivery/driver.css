@@ -1,0 +1,41 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #182b2a;
+  background: #f4f7f6;
+  line-height: 1.5;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { max-width: 44rem; margin: auto; padding: 1rem; }
+header { margin-bottom: 1.5rem; }
+a { color: #175d54; }
+h1 { margin: 0; font-size: 1.75rem; }
+h2 { font-size: 1.15rem; margin-bottom: 0.5rem; }
+p { overflow-wrap: anywhere; }
+.eyebrow { margin-bottom: 0.25rem; color: #506663; font-size: 0.875rem; }
+label { display: block; font-weight: 600; margin-bottom: 0.5rem; }
+/* Keep the driver controls comfortably sized for touch on a phone. */
+input, button { font: inherit; min-height: 48px; border-radius: 4px; }
+input { min-width: 0; width: 100%; padding: 0.5rem; border: 1px solid #718a85; background: white; }
+button { padding: 0.75rem 1rem; border: 1px solid #175d54; background: #175d54; color: white; cursor: pointer; }
+button:disabled { opacity: 0.55; cursor: default; }
+.secondary { background: white; color: #175d54; }
+:focus-visible { outline: 3px solid #b35e15; outline-offset: 3px; }
+.entry-controls { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.5rem; }
+.assignment { color: #506663; font-size: 0.875rem; }
+.metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; margin: 1rem 0; }
+.metrics div { padding: 0.75rem 0.5rem; border-top: 2px solid #b7d0c9; }
+dt { font-size: 0.8rem; color: #506663; }
+dd { margin: 0.25rem 0 0; font-size: 1.25rem; font-weight: 650; }
+#map { width: 100%; height: clamp(240px, 40vh, 380px); border: 1px solid #b7d0c9; }
+#instructions-button { width: 100%; margin-top: 0.5rem; }
+.task-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+#task { margin: 1.5rem 0; }
+#round-summary { margin: 1rem 0; padding: 1rem; border: 1px solid #b7d0c9; background: white; }
+#round-summary .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; }
+#error { padding: 0.75rem; border-left: 4px solid #a13225; background: #fff1ed; color: #80271e; }
+.driver-marker { filter: hue-rotate(145deg); }
+dialog { width: calc(100% - 2rem); max-width: 30rem; border: 1px solid #718a85; padding: 1.5rem; border-radius: 4px; }
+dialog::backdrop { background: rgb(16 34 31 / 50%); }
+[hidden] { display: none !important; }

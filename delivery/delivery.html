@@ -1,132 +1,72 @@
-<link rel="stylesheet" href="/css/menu.css">
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@2.0.0-beta.3/dist/leaflet.css">
-
-    <script type="importmap">
-        {
-            "imports": {
-                "leaflet": "https://cdn.jsdelivr.net/npm/leaflet@2.0.0-beta.3/dist/leaflet.js"
-            }
-        }
-    </script>
-
-    <title>Delivery Map</title>
-
-    <style>
-        body {
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            font-family: sans-serif;
-        }
-
-        #map {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 0;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Driver round</title>
+  <link rel="stylesheet" href="/delivery/vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="/delivery/driver.css">
+  <script src="/delivery/vendor/leaflet/leaflet.js" defer></script>
+  <script src="/delivery/driver.js" defer></script>
 </head>
-
 <body>
-    <div id="map"></div>
+  <main>
+    <header>
+      <a href="/">Home</a>
+      <p class="eyebrow">Distribution logistics</p>
+      <h1>Driver round</h1>
+    </header>
 
-    <!-- Map and route -->
-    <script type="module">
+    <form id="driver-form">
+      <label for="driver-id">Driver ID</label>
+      <div class="entry-controls">
+        <input id="driver-id" name="driverId" required maxlength="100" autocomplete="username">
+        <button type="submit">Start round</button>
+      </div>
+    </form>
+    <p id="error" role="alert" hidden></p>
 
-        import {
-            LeafletMap,
-            TileLayer,
-            GeoJSON
-        } from 'leaflet';
+    <!-- Reveal the round only after assignment and navigation load successfully. -->
+    <section id="round" aria-label="Assigned round" hidden>
+      <p class="assignment">Vehicle <strong data-testid="vehicle-id"></strong>
+        <span aria-hidden="true"> / </span> Round <strong data-testid="round-id"></strong></p>
+      <h2 data-testid="navigation-mode"></h2>
+      <p id="destination"></p>
 
-        // Create map
-        const map = new LeafletMap('map')
-            .setView([53.33333, -6.24889], 11);
+      <dl class="metrics">
+        <div><dt>Next stop ETA</dt><dd data-testid="next-stop-eta"></dd></div>
+        <div><dt>Finish at hub</dt><dd data-testid="estimated-finish-time"></dd></div>
+        <div><dt>Stops left</dt><dd data-testid="remaining-stops"></dd></div>
+      </dl>
 
-        // Add OpenStreetMap background
-        new TileLayer(
-            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-            {
-                maxZoom: 19,
-                attribution: '&copy; OpenStreetMap'
-            }
-        ).addTo(map);
+      <section id="round-summary" aria-labelledby="summary-title" aria-live="polite" hidden>
+        <h2 id="summary-title">Round summary</h2>
+        <dl class="metrics">
+          <div><dt>Succeeded</dt><dd data-testid="succeeded-count"></dd></div>
+          <div><dt>Failed</dt><dd data-testid="failed-count"></dd></div>
+        </dl>
+        <p>Delivery tasks finished. Follow the route back to the hub.</p>
+      </section>
 
-        // Load delivery route
-        console.log("Loading delivery route...");
+      <div id="map" aria-label="Round route map"></div>
+      <button id="instructions-button" class="secondary" type="button">Delivery instructions</button>
 
-        const response = await fetch(
-            "/routes/order_123.geojson"
-        );
+      <section id="task" aria-label="Current delivery">
+        <h2>Task <span data-testid="task-id"></span></h2>
+        <p id="proof-status" role="status">Take a photo before confirming this delivery.</p>
+        <div class="task-controls">
+          <button id="photo-button" class="secondary" type="button">Take photo</button>
+          <button id="confirm-button" type="button" disabled>Confirm delivery</button>
+          <button id="failed-button" class="secondary" type="button">Failed task</button>
+        </div>
+      </section>
+    </section>
 
-        const data = await response.json();
-
-        // Add GeoJSON to map
-        const routeLayer = new GeoJSON(data, {
-
-            style: function (feature) {
-                return {
-                    color: "blue",
-                    weight: 5,
-                    opacity: 0.9
-                };
-            }
-
-        });
-
-        routeLayer.addTo(map);
-
-
-
-    </script>
-
-
-    <!-- Menu -->
-    <button id="menu" class="menu" onclick="togglePanel()">
-        ☰
-    </button>
-
-    <div id="sidePanel" class="side-panel">
-
-        <button class="close-menu" onclick="togglePanel()">
-            &times;
-        </button>
-
-        <h2>Menu</h2>
-
-        <a href="/">Home</a>
-        <a href="/User">User</a>
-        <a href="/Warehouse">Warehouse</a>
-        <a href="/Delivery">Delivery</a>
-        <a href="/Account">Account</a>
-
-    </div>
-
-
-    <script>
-
-        function togglePanel() {
-
-            document.getElementById("sidePanel")
-                .classList.toggle("open");
-
-        }
-
-    </script>
-
+    <dialog id="instructions-dialog" aria-labelledby="instructions-title">
+      <h2 id="instructions-title">Delivery instructions</h2>
+      <p id="instructions-text"></p>
+      <button id="close-instructions" type="button">Close instructions</button>
+    </dialog>
+  </main>
 </body>
-
 </html>

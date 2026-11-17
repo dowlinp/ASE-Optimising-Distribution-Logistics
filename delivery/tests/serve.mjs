@@ -24,7 +24,7 @@ const containerProcess = spawn(
     '--rm',
     '--name', containerName,
     '--add-host=host.docker.internal:host-gateway',
-    '-p', '127.0.0.1:5083:5000',
+    '-p', '5083:5000',
     '-e', 'DCM_BASE_URL=http://host.docker.internal:5091',
     '-e', 'ROUTING_BASE_URL=http://host.docker.internal:5091',
     '-e', 'LOCATION_BASE_URL=http://host.docker.internal:5091',
