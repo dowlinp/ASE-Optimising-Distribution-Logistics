@@ -1,16 +1,22 @@
-// Runs the delivery tests in a phone-sized browser against the Java/Docker host.
+// Run the same acceptance/HTTP scenarios in both supported phone browser engines.
 import { defineConfig } from '@playwright/test';
 import { fileURLToPath } from 'node:url';
 
 export default defineConfig({
   testDir: './tests',
-  testMatch: 'driver.spec.mjs',
+  testMatch: ['driver.spec.mjs', 'driver-edges.spec.mjs', 'transport.spec.mjs'],
   // The tests share one fake service, so run them one at a time to isolate state.
   workers: 1,
   // All timeout values are milliseconds; failed tests are not automatically retried.
   timeout: 20000,
   expect: { timeout: 5000 },
   retries: 0,
+
+  // Additional layout assertions exercise both 360px and 390px in each engine.
+  projects: [
+    { name: 'chromium', use: { browserName: 'chromium' } },
+    { name: 'webkit', use: { browserName: 'webkit' } },
+  ],
 
   // Use a consistent phone viewport and Dublin time when checking displayed estimates.
   use: {

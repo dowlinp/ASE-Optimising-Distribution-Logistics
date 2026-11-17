@@ -60,6 +60,18 @@ export function startFakeServices(port = 5091) {
 
     calls.push({ method: request.method, path: request.url, body });
 
+    // Transport probes are test-provider endpoints, not application routes. The
+    // unusual status and echoed bytes expose gateways that rewrite errors/bodies.
+    if (path === '/__contract/echo') {
+      return sendJson(418, { method: request.method, path: request.url, body });
+    }
+    if (path === '/__contract/slow') {
+      // Longer than the host's specified five-second timeout. Other requests can
+      // still be handled while this one waits; no application timer is mocked.
+      setTimeout(() => sendJson(200, { late: true }), 6500).unref();
+      return;
+    }
+
     // Driver lookup returns the one vehicle and round assigned in the fixture data.
     if (path.includes('/drivers/')) {
       return sendJson(200, createRound(options, completedTaskCount, outcomes));

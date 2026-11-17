@@ -30,7 +30,7 @@ export function setServiceOptions(options) {
   return callTestService('options', options);
 }
 
-export async function startAssignedRound(page, options = {}) {
+export async function openDriverPage(page, options = {}) {
   // Clear the previous test's calls and completed tasks before opening the driver screen.
   await callTestService('reset', options);
 
@@ -50,9 +50,13 @@ export async function startAssignedRound(page, options = {}) {
     });
   });
 
-  // Start through the real form, then wait until the task, route and marker are visible.
+  // Assignment-error tests need to open the form without assuming lookup will succeed.
   await page.goto('/Delivery');
+}
 
+export async function startAssignedRound(page, options = {}) {
+  await openDriverPage(page, options);
+  // Start through the real form, then wait until the task, route and marker are visible.
   const driverIdInput = page.getByLabel('Driver ID', { exact: true });
   await expect(driverIdInput).toBeVisible();
   await driverIdInput.fill('DRIVER-1');

@@ -1,14 +1,19 @@
+// This file stores fingerprints of the frozen test files so the integrity check can detect changes during implementation.
 {
   ".dockerignore": "1cc0660fdb5eae95ef0e30c3f45df90a627a0fe5cdd98e261e0605875119187c",
   ".gitignore": "d36e8680e2280aacdaa1e55d73fe0cc058da20b90c921207ccbeeed1c1c80cf6",
-  "delivery/playwright.config.mjs": "5675298923666b960b98308454aafa0b2506e7b163c01ade9889f9eadd458fe4",
-  "delivery/tests/README.md": "ca4f0ae502dd0da831a9fbc4125383ec5f1500d8bf1d31abca9664088018515e",
+  "delivery/playwright.config.mjs": "42a062cab2237e5dab03adc51d7ccbf9aefb3d0da3dac94658ae8a7c97214639",
+  "delivery/tests/README.md": "45fa57c49b6d855d3fb7a7a03c443454b89c63ee4ae9df769c35cdb3de75735f",
   "delivery/tests/driver.spec.mjs": "8af95727e38080f22ce987122b420d85c8e362f4f0b7436dc59906b7076f41be",
   "delivery/tests/fixtures.mjs": "d2bf23f423ecebc5e479bf9cecdc0d8d1ac6fcfdd1e50f1418291ff91c775224",
-  "delivery/tests/helpers.mjs": "b4485b631cfab0827a0054b929f8f4c1e5f1d781b353496c47db7c86d4bb6e04",
-  "delivery/tests/serve.mjs": "1c90447b45a5e2de4a5fbb5b67a943a551f9ce2b29a124a74b9bb7d531a07aca",
-  "delivery/tests/upstream.mjs": "a76d7bbb753fcc1d8391909f55a0abc4c2d1bd046c1cec0305913449d9983ccf",
+  "delivery/tests/helpers.mjs": "c34ba2070776677b9f1a3c004b9798d30c9ffed1a76135f4f001106a9ef68c9e",
+  "delivery/tests/serve.mjs": "20573c5cc15af15aaaaec2441d26330c122501ecb52b88a3b915141d8f2f912b",
+  "delivery/tests/upstream.mjs": "366f92d5ed401473cc43f5737887f5391ae0035029899cc31cedb691fdeb1cb9",
   "delivery/tests/verify-freeze.mjs": "596be73605d403570e2c843417ddce0ddb93faecb70a86098097d348ecf3d87b",
   "package-lock.json": "d92e294a1e133fcd4ecca36bafb36ea7034ef50df4f3e35b65c4f8a9fea16bd2",
-  "package.json": "b58d2b1509086493caf91fd9ab7121fbde0c0a3bcedb6fcdbdcbdaf32ec16a25"
+  "package.json": "652a9428c5e360112089da54aa3b13dbbd81c4da78bd721ba0038883d4b7c9f4",
+  "delivery/integration.config.mjs": "372cc3f835cf161b5ac36fb576cf0e916fc8b27d8c7ba023b3d7d6f41639d466",
+  "delivery/tests/driver-edges.spec.mjs": "63862ff91993f6742365c2e490f62b106bda0fb8fb11d3c5af8112c62755f51c",
+  "delivery/tests/transport.spec.mjs": "bf69404726245c969e7e4a5c05dddeb61a204470afcdb252649c7a3cdda2edf2",
+  "delivery/tests/integration.spec.mjs": "43e0d09b84f6b92f29f94fcbc63f462dc8988fd6c5541e26d4a264ea926cf4ee"
 }

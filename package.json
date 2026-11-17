@@ -4,6 +4,9 @@
   "type": "module",
   "scripts": {
     "test": "npm run verify:test-freeze && playwright test --config delivery/playwright.config.mjs",
+    "test:acceptance": "npm run verify:test-freeze && playwright test --config delivery/playwright.config.mjs --grep-invert @contracts",
+    "test:contracts": "npm run verify:test-freeze && playwright test --config delivery/playwright.config.mjs --grep @contracts",
+    "test:integration": "npm run verify:test-freeze && playwright test --config delivery/integration.config.mjs",
     "verify:test-freeze": "node delivery/tests/verify-freeze.mjs"
   },
   "devDependencies": {
