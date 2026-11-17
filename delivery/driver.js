@@ -17,6 +17,7 @@ let outcomeAccepted = false;
 let map;
 let routeLayer;
 let markerLayer;
+let driverMarker;
 
 async function requestJson(path, options = {}) {
   const response = await fetch(path, {
@@ -120,13 +121,13 @@ function displayMap(navigation) {
       alt: 'Delivery destination', keyboard: false, interactive: false,
     }).addTo(markerLayer);
   }
-  const driver = L.marker([position.latitude, position.longitude], {
+  driverMarker = L.marker([position.latitude, position.longitude], {
     alt: 'Driver location',
     keyboard: false,
     interactive: false,
     zIndexOffset: 1000,
   }).addTo(markerLayer);
-  driver.getElement().classList.add('driver-marker');
+  driverMarker.getElement().classList.add('driver-marker');
 
   map.invalidateSize();
   map.fitBounds(routeLayer.getBounds(), { padding: [30, 30], animate: false });
@@ -184,13 +185,8 @@ form.addEventListener('submit', async event => {
       `/api/dcm/drivers/${encodeURIComponent(driverId)}/active-round`,
     );
     validateRound(assignedRound);
-    const initialPosition = await requestJson(
-      `/api/location/vehicles/${encodeURIComponent(assignedRound.vehicleId)}/position`,
-    );
-    if (!validPosition(initialPosition)) {
-      throw new Error('The service returned an invalid driver position.');
-    }
-    position = initialPosition;
+    // Show navigation from the configured hub before waiting for simulated position.
+    position = assignedRound.hub;
     const navigation = await readNavigation(assignedRound);
     round = assignedRound;
     proofConfirmed = false;
@@ -198,6 +194,16 @@ form.addEventListener('submit', async event => {
     outcomeAccepted = false;
     form.hidden = true;
     renderRound(navigation);
+
+    const initialPosition = await requestJson(
+      `/api/location/vehicles/${encodeURIComponent(assignedRound.vehicleId)}/position`,
+    );
+    if (!validPosition(initialPosition)) {
+      throw new Error('The service returned an invalid driver position.');
+    }
+    position = initialPosition;
+    // A position sample changes only this marker; route, task and proof stay intact.
+    driverMarker.setLatLng([position.latitude, position.longitude]);
   } catch (error) {
     showError(error);
   } finally {
