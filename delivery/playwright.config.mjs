@@ -1,4 +1,4 @@
-// Runs the five delivery tests in a phone-sized browser against the Java/Docker host.
+// Runs the delivery tests in a phone-sized browser against the Java/Docker host.
 import { defineConfig } from '@playwright/test';
 import { fileURLToPath } from 'node:url';
 

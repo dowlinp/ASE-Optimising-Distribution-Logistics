@@ -71,6 +71,9 @@ The round summary should show **0 succeeded** and **1 failed**. Summary totals c
 from DCM's round response as `summary: { succeeded, failed }`; missing totals display
 as unavailable while the return route remains visible.
 
+If an outcome is saved but the next round or route cannot be loaded, select **Retry**.
+This reloads the round and navigation without sending the delivery outcome again.
+
 The devices share one mock backend. Completing the delivery on one device changes
 the backend state for the other. For a fresh run, stop and restart the launcher,
 then reload both browser pages. Existing pages do not automatically synchronise

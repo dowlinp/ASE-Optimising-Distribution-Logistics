@@ -1,4 +1,4 @@
-// Five browser acceptance tests for the driver interface, using fake external services.
+// Browser acceptance tests for the driver interface, using fake external services.
 // Each test checks visible behaviour and the API requests sent by the interface.
 import { test, expect } from '@playwright/test';
 import {
@@ -213,4 +213,52 @@ test('unacknowledged outcome leaves the current task in place', async ({ page })
 
   const serviceState = await readServiceState();
   expect(serviceState.outcomes).toEqual([]);
+});
+
+test('accepted outcome can retry round and route reads without resubmitting delivery', async ({ page }) => {
+  // Fail each follow-up read once, after the outcome has already been saved by DCM.
+  await startAssignedRound(page);
+  let failRoundRead = true;
+  let failRouteRead = true;
+
+  await page.route('**/api/dcm/rounds/ROUND-1', route => {
+    if (failRoundRead) {
+      failRoundRead = false;
+      return route.fulfill({ status: 503, json: { error: 'Round temporarily unavailable' } });
+    }
+    return route.continue();
+  });
+  await page.route('**/api/routing/rounds/ROUND-1/navigation?*', route => {
+    if (failRouteRead) {
+      failRouteRead = false;
+      return route.fulfill({ status: 503, json: { error: 'Route temporarily unavailable' } });
+    }
+    return route.continue();
+  });
+
+  await page.getByRole('button', { name: 'Take photo', exact: true }).click();
+  await page.getByRole('button', { name: 'Confirm delivery', exact: true }).click();
+
+  const retryButton = page.getByRole('button', { name: 'Retry', exact: true });
+  await expect(page.getByRole('alert')).toContainText('Your update was saved');
+  await expect(retryButton).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Confirm delivery', exact: true })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Failed task', exact: true })).toBeDisabled();
+
+  // The first retry gets the round, but the route is still unavailable.
+  await retryButton.click();
+  await expect(retryButton).toBeEnabled();
+  await expect.poll(() => countServiceRequests('/rounds/ROUND-1')).toBe(1);
+  await expect(page.getByRole('alert')).toBeVisible();
+  expect(await countServiceRequests('/outcomes')).toBe(1);
+
+  // The second retry recovers the return route and summary without another POST.
+  await retryButton.click();
+  await expect(page.getByTestId('navigation-mode')).toHaveText('Return to hub');
+  await expect(page.getByTestId('succeeded-count')).toHaveText('1');
+  await expect(page.getByTestId('failed-count')).toHaveText('0');
+  await expect(retryButton).not.toBeVisible();
+  await expect(page.getByRole('alert')).not.toBeVisible();
+  expect(await countServiceRequests('/outcomes')).toBe(1);
+  expect((await readServiceState()).completed).toBe(1);
 });

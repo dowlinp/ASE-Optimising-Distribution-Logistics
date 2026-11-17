@@ -8,4 +8,4 @@ npx playwright install chromium
 npm test
 ```
 
-The five tests are expected to fail until the driver interface is implemented.
+Tests for unfinished features are expected to fail until those features are implemented.

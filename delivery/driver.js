@@ -5,6 +5,7 @@ const roundSection = element('#round');
 const photoButton = element('#photo-button');
 const confirmButton = element('#confirm-button');
 const failedButton = element('#failed-button');
+const retryButton = element('#retry-button');
 const instructionsDialog = element('#instructions-dialog');
 
 let round;
@@ -33,8 +34,11 @@ async function requestJson(path, options = {}) {
 
 function showError(error) {
   const message = element('#error');
-  message.textContent = error.message;
+  message.textContent = outcomeAccepted
+    ? 'Your update was saved. Retry to load the next route.'
+    : error.message;
   message.hidden = false;
+  retryButton.hidden = !outcomeAccepted;
 }
 
 function showValue(name, value) {
@@ -212,6 +216,25 @@ photoButton.addEventListener('click', () => {
   confirmButton.disabled = !proofConfirmed || submitting || outcomeAccepted;
 });
 
+// After acknowledgement, recovery repeats only these reads, never the outcome POST.
+async function refreshAfterOutcome() {
+  const nextRound = await requestJson(`/api/dcm/rounds/${encodeURIComponent(round.roundId)}`);
+  validateRound(nextRound);
+  const nextNavigation = await readNavigation(nextRound);
+  round = nextRound;
+  proofConfirmed = false;
+  pendingOutcome = undefined;
+  outcomeAccepted = false;
+  renderRound(nextNavigation);
+  retryButton.hidden = true;
+}
+
+function updateOutcomeButtons() {
+  photoButton.disabled = !!pendingOutcome || outcomeAccepted;
+  confirmButton.disabled = !proofConfirmed || outcomeAccepted || pendingOutcome?.outcome === 'FAILED';
+  failedButton.disabled = outcomeAccepted || pendingOutcome?.outcome === 'SUCCESS';
+}
+
 async function submitOutcome(outcome) {
   if (!round?.activeTask || submitting || outcomeAccepted
       || (pendingOutcome && pendingOutcome.outcome !== outcome)
@@ -245,23 +268,33 @@ async function submitOutcome(outcome) {
     outcomeAccepted = true;
 
     // DCM determines the next task; routing supplies its route or the return to the hub.
-    const nextRound = await requestJson(`/api/dcm/rounds/${encodeURIComponent(round.roundId)}`);
-    validateRound(nextRound);
-    const nextNavigation = await readNavigation(nextRound);
-    round = nextRound;
-    proofConfirmed = false;
-    pendingOutcome = undefined;
-    outcomeAccepted = false;
-    renderRound(nextNavigation);
+    await refreshAfterOutcome();
   } catch (error) {
     showError(error);
   } finally {
     submitting = false;
-    photoButton.disabled = !!pendingOutcome || outcomeAccepted;
-    confirmButton.disabled = !proofConfirmed || outcomeAccepted || pendingOutcome?.outcome === 'FAILED';
-    failedButton.disabled = outcomeAccepted || pendingOutcome?.outcome === 'SUCCESS';
+    updateOutcomeButtons();
   }
 }
+
+retryButton.addEventListener('click', async () => {
+  if (!outcomeAccepted || submitting) {
+    return;
+  }
+  submitting = true;
+  retryButton.disabled = true;
+  element('#error').hidden = true;
+
+  try {
+    await refreshAfterOutcome();
+  } catch (error) {
+    showError(error);
+  } finally {
+    submitting = false;
+    retryButton.disabled = false;
+    updateOutcomeButtons();
+  }
+});
 
 confirmButton.addEventListener('click', () => submitOutcome('SUCCESS'));
 failedButton.addEventListener('click', () => submitOutcome('FAILED'));
