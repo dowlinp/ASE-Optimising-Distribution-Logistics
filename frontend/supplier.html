@@ -9,7 +9,7 @@
     main { max-width: 480px; margin: auto; background: white; padding: 28px; border-radius: 10px; }
     h1 { margin-top: 0; }
     label { display: block; margin: 16px 0 6px; font-weight: bold; }
-    input, textarea { box-sizing: border-box; width: 100%; padding: 10px; border: 1px solid #aaa; border-radius: 5px; font: inherit; }
+    input, textarea, select { box-sizing: border-box; width: 100%; padding: 10px; border: 1px solid #aaa; border-radius: 5px; font: inherit; }
     textarea { min-height: 90px; resize: vertical; }
     button { margin-top: 20px; padding: 12px 18px; background: #222; color: white; border: 0; border-radius: 5px; cursor: pointer; }
     button:disabled { opacity: 0.6; cursor: wait; }
@@ -21,7 +21,7 @@
 <body>
   <main>
     <h1>Add a Product</h1>
-    <p>Complete all fields to submit a new product listing.</p>
+    <p>Complete all required fields to submit a new product listing.</p>
 
     <form id="listingForm" novalidate>
       <label for="supplierId">Supplier ID *</label>
@@ -39,8 +39,15 @@
       <label for="price">Price *</label>
       <input id="price" name="price" type="number" min="0.01" step="0.01" required>
 
-      <label for="image">Product Image *</label>
-      <input id="image" name="image" type="file" accept="image/*" required>
+      <label for="productType">Product/Service Type *</label>
+      <select id="productType" name="productType" required>
+        <option value="">Select type</option>
+        <option value="product">Product</option>
+        <option value="service">Service</option>
+      </select>
+
+      <label for="image">Product Image (coming later)</label>
+      <input id="image" type="file" accept="image/*" disabled>
 
       <button type="submit">Submit Product</button>
       <p id="message" role="status" aria-live="polite"></p>
@@ -51,18 +58,15 @@
     const form = document.getElementById("listingForm");
     const message = document.getElementById("message");
 
-    // Replace /api/products if Catalogue Management uses a different endpoint.
+    // Agreed text-only endpoint; Java backend must implement it.
     async function submitListing(supplierId, productDetails) {
-      const data = new FormData();
-      data.append("supplierId", supplierId);
-      for (const [key, value] of Object.entries(productDetails)) {
-        data.append(key, value);
-      }
-
+      const data = new URLSearchParams({ supplierId, ...productDetails });
       const response = await fetch("/api/products", { method: "POST", body: data });
-      if (!response.ok) {
-        throw new Error(`Catalogue Management returned error ${response.status}.`);
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || `Catalogue Management returned error ${response.status}.`);
       }
+      return result;
     }
 
     form.addEventListener("submit", async (event) => {
@@ -71,7 +75,7 @@
       message.className = "";
 
       if (!form.checkValidity()) {
-        message.textContent = "Please complete every field and enter a valid price and image.";
+        message.textContent = "Please complete all required fields and enter a valid price.";
         message.className = "error";
         form.reportValidity();
         return;
@@ -82,13 +86,12 @@
         productId: form.elements.productId.value.trim(),
         productName: form.elements.productName.value.trim(),
         description: form.elements.description.value.trim(),
-        price: Number(form.elements.price.value),
-        image: form.elements.image.files[0]
+        price: form.elements.price.value,
+        productType: form.elements.productType.value
       };
 
-      if (!supplierId || !productDetails.productId || !productDetails.productName || !productDetails.description ||
-          !productDetails.image.type.startsWith("image/")) {
-        message.textContent = "All text fields must contain text, and the upload must be an image.";
+      if (!supplierId || !productDetails.productId || !productDetails.productName || !productDetails.description) {
+        message.textContent = "All text fields must contain text.";
         message.className = "error";
         return;
       }
@@ -96,8 +99,8 @@
       const button = form.querySelector('button[type="submit"]');
       button.disabled = true;
       try {
-        await submitListing(supplierId, productDetails);
-        message.textContent = "Product successfully listed!";
+        const result = await submitListing(supplierId, productDetails);
+        message.textContent = result.message || "Product successfully listed!";
         message.className = "success";
         form.reset();
       } catch (error) {
