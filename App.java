@@ -27,6 +27,7 @@ public class App {
         server.createContext("/api/dcm/", exchange -> forward(exchange, "/api/dcm", "DCM_BASE_URL"));
         server.createContext("/api/routing/", exchange -> forward(exchange, "/api/routing", "ROUTING_BASE_URL"));
         server.createContext("/api/location/", exchange -> forward(exchange, "/api/location", "LOCATION_BASE_URL"));
+        server.createContext("/api/sync", App::fakeSync);
 
         server.createContext("/", exchange -> {
             byte[] body = Files.readAllBytes(Path.of("home/home.html"));
@@ -175,6 +176,35 @@ public class App {
         String type = name.endsWith(".js") ? "text/javascript; charset=utf-8"
                 : name.endsWith(".css") ? "text/css; charset=utf-8" : "image/png";
         respond(exchange, 200, type, Files.readAllBytes(file));
+    }
+
+    // POC stub: receive navigation and acknowledge it without storing or processing it.
+    private static void fakeSync(HttpExchange exchange) throws IOException {
+        if (!exchange.getRequestURI().getRawPath().equals("/api/sync")) {
+            respond(exchange, 404, "application/json", "{\"error\":\"Not found\"}".getBytes());
+            return;
+        }
+        if (!exchange.getRequestMethod().equals("POST")) {
+            exchange.getResponseHeaders().set("Allow", "POST");
+            respond(exchange, 405, "application/json", "{\"error\":\"Method not allowed\"}".getBytes());
+            return;
+        }
+        String contentType = exchange.getRequestHeaders().getFirst("Content-Type");
+        if (contentType == null || !contentType.split(";", 2)[0].trim().equalsIgnoreCase("application/json")) {
+            respond(exchange, 415, "application/json", "{\"error\":\"JSON required\"}".getBytes());
+            return;
+        }
+        // Use the same 64 KiB request limit as the forwarding handlers.
+        byte[] navigation = exchange.getRequestBody().readNBytes(65537);
+        if (navigation.length > 65536) {
+            respond(exchange, 413, "application/json", "{\"error\":\"Request too large\"}".getBytes());
+            return;
+        }
+        if (navigation.length == 0) {
+            respond(exchange, 400, "application/json", "{\"error\":\"Navigation required\"}".getBytes());
+            return;
+        }
+        respond(exchange, 200, "application/json", "true".getBytes());
     }
 
     // Forward requests to configured services; task progression stays in DCM.
