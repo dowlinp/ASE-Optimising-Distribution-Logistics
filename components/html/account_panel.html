@@ -1,0 +1,56 @@
+
+<div class="account_panel">
+
+    <!-- Logged out -->
+    <div id="loggedOut">
+        <div class="account_heading">Your Account</div>
+
+        <form id="loginForm">
+            <input
+                type="text"
+                id="loginName"
+                placeholder="Username or email"
+                required
+            >
+
+            <input
+                type="password"
+                id="loginPassword"
+                placeholder="Password"
+                required
+            >
+
+            <button type="submit" class="account_button">
+                Log In
+            </button>
+
+            <p id="loginMessage"></p>
+        </form>
+
+        <a href="/Account" class="signup-button">
+            Create Account
+        </a>
+    </div>
+
+    <!-- Logged in -->
+    <div id="loggedIn" hidden>
+        <div class="account_heading">Your Account</div>
+
+        <div class="account_user">
+            <div class="account_avatar">👤</div>
+            <div>
+                <strong id="accountUsername"></strong>
+                <small id="accountEmail"></small>
+            </div>
+        </div>
+
+        <a href="/Account" class="account_option">
+            My Account
+        </a>
+
+        <button id="logoutButton" class="logout-button">
+            Log Out
+        </button>
+    </div>
+
+</div>

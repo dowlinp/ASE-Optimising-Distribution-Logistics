@@ -9,19 +9,30 @@ RUN apt-get update && \
 
 ENV PATH="/opt/venv/bin:${PATH}"
 
+# Java source files
 COPY App.java ./
+COPY home/ ./home/
+
+# Website files
 COPY delivery/ ./delivery/
 COPY frontend/ ./frontend/
 COPY warehouse/ ./warehouse/
 COPY videos/ ./videos/
-COPY home/ ./home/
+
+# Components
 COPY components/css ./components/css/
 COPY components/js ./components/js/
 COPY components/html ./components/html/
-COPY components/lib ./components/lib/
+
+# Java libraries: BCrypt and PostgreSQL
+COPY components/lib/ ./lib/
 
 ENV HOST=0.0.0.0
 
 EXPOSE 5000
 
-CMD ["java", "--class-path", ".:lib/*", "App.java"]
+# Compile both Java source files
+RUN javac -cp "lib/*" -d . App.java home/AccountManager.java
+
+# Start the application
+CMD ["java", "-cp", ".:lib/*", "App"]

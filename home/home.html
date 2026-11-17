@@ -145,14 +145,7 @@
   <script>
     const loggedIn = sessionStorage.getItem("loggedIn");
     const username = sessionStorage.getItem("username");
-
-    if (loggedIn === "true") {
-      document.getElementById("accountStatus").innerHTML =
-        "Welcome back, " + username + "!";
-    }
   </script>
-
-  <button onclick="logout()">Logout</button>
 
   <script>
     function logout() {

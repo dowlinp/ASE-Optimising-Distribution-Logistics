@@ -74,8 +74,18 @@
     font-size: 25px;
 }
 
-.side-panel .account-link {
+.side-panel .account_link {
     margin-top: auto;
     border-top: 1px solid #ddd;
     border-bottom: none;
+}
+
+#account_panel {
+    margin-top: auto;
+    width: 100%;
+}
+
+.account_panel {
+    padding-top: 15px;
+    border-top: 1px solid #ddd;
 }
